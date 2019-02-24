@@ -1,0 +1,22 @@
+{
+  "name": "monitorcasabot",
+  "version": "1.0.0",
+  "description": "Bot telegram para monitorización",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eduarroyo/MonitorCasaBot.git"
+  },
+  "author": "Eduardo Arroyo Ramírez",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/eduarroyo/MonitorCasaBot/issues"
+  },
+  "homepage": "https://github.com/eduarroyo/MonitorCasaBot#readme",
+  "dependencies": {
+    "node-telegram-bot-api": "^0.30.0"
+  }
+}
