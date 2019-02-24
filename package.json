@@ -1,22 +1,19 @@
 {
-  "name": "monitorcasabot",
-  "version": "1.0.0",
-  "description": "Bot telegram para monitorización",
-  "main": "app.js",
+  "name": "heroku-node-telegram-bot",
+  "version": "1.0.3",
+  "description": "Starter pack for running telegram bot on the Heroku using Node.js",
+  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "switch_to_dev": "export $(cat .env | xargs) && wget --spider https://api.telegram.org/bot$TOKEN/setWebhook?url= --delete-after && node index.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/eduarroyo/MonitorCasaBot.git"
-  },
-  "author": "Eduardo Arroyo Ramírez",
+  "author": "Volodymyr Lut",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/eduarroyo/MonitorCasaBot/issues"
-  },
-  "homepage": "https://github.com/eduarroyo/MonitorCasaBot#readme",
   "dependencies": {
+    "body-parser": "^1.15.0",
+    "dotenv": "^4.0.0",
+    "express": "^4.13.4",
     "node-telegram-bot-api": "^0.30.0"
   }
 }
