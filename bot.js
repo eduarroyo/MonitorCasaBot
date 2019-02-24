@@ -1,11 +1,11 @@
-var token = "791288056:AAHy0K-jGsOG1jmFaMzX7Z1ASfwL4OF5Gp8";
+var token = process.env.TOKEN;
 
 var Bot = require('node-telegram-bot-api');
 var bot;
 
 if (process.env.NODE_ENV === 'production') {
     bot = new Bot(token);
-    bot.setWebHook("https://monitor-actividad.herokuapp.com/" + bot.token);
+    bot.setWebHook(process.env.HEROKU_URL + bot.token);
 } else {
     bot = new Bot(token, { polling: true });
 }
