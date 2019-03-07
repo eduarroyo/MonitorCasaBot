@@ -3,6 +3,25 @@ var token = process.env.TOKEN;
 var Bot = require('node-telegram-bot-api');
 var bot;
 
+var client = require('mongodb').MongoClient;
+var connectionUrl = 'mongodb+srv://lector:TGRXOtj4KAdlxQI9@monitordb-9o1ct.mongodb.net/MonitorDb';
+
+try {
+    var db = client.db("MonitorDb");
+    var devices = db.collection("devices");
+
+    devices.find().toArray(function(err, docs) {
+        if(err) {
+            console.log("Error al realizar la consulta", JSON.stringify(err));
+        } else {
+            console.log("Consulta correcta", JSON.stringify(docs));
+        }
+    });
+} catch (error) {
+    console.log("Excepción al realizar consulta", JSON.stringify(error));
+}
+
+
 if (process.env.NODE_ENV === 'production') {
     bot = new Bot(token);
     bot.setWebHook(process.env.HEROKU_URL + bot.token);
