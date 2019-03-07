@@ -3,21 +3,27 @@ var token = process.env.TOKEN;
 var Bot = require('node-telegram-bot-api');
 var bot;
 
-var client = require('mongodb').MongoClient;
+var MongoClient = require('mongodb').MongoClient;
 var connectionUrl = 'mongodb+srv://lector:TGRXOtj4KAdlxQI9@monitordb-9o1ct.mongodb.net/MonitorDb';
 
 try {
-    var db = client.db("MonitorDb");
-    console.log("Obtenida la base de datos");
-    var devices = db.collection("devices");
-    console.log("Obtenida la colección devices");
-
-    devices.find().toArray(function(err, docs) {
-        if(err) {
-            console.log("Error al realizar la consulta", JSON.stringify(err));
-        } else {
-            console.log("Consulta correcta", JSON.stringify(docs));
+    MongoClient.connect(connectionUrl, function(err1, client) {
+        if(err1) {
+            console.log("Error al obtener la conexión", err1);
         }
+        console.log("Conexión al servidor de bases de datos.");
+        var db = client.db("MonitorDb");
+        console.log("Obtenida la base de datos");
+        var devices = db.collection("devices");
+        console.log("Obtenida la colección devices");
+
+        devices.find().toArray(function(err2, docs) {
+            if(err2) {
+                console.log("Error al realizar la consulta", JSON.stringify(err));
+            } else {
+                console.log("Consulta correcta", docs);
+            }
+        });
     });
 } catch (error) {
     console.log("Excepción al realizar consulta", JSON.stringify(error));
