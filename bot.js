@@ -8,7 +8,9 @@ var connectionUrl = 'mongodb+srv://lector:TGRXOtj4KAdlxQI9@monitordb-9o1ct.mongo
 
 try {
     var db = client.db("MonitorDb");
+    console.log("Obtenida la base de datos");
     var devices = db.collection("devices");
+    console.log("Obtenida la colección devices");
 
     devices.find().toArray(function(err, docs) {
         if(err) {
