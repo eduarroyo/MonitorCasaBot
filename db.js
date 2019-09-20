@@ -12,11 +12,11 @@ var datosConexion = {
     collection: "devices"
 };
 
-function obtenerLista(monitorId, callback) {
+function obtenerLista(callback) {
     var db = MongoClient.connect(datosConexion.url, {useNewUrlParser: true, useUnifiedTopology: true})
         .then(function(client) {
-            var collection = client.db(datosConexion.db).collection(datosColeccion.collection);
-            collection.find({ monitorId: monitorId }).toArray(function(err2, dispositivos) {
+            var collection = client.db(datosConexion.db).collection(datosConexion.collection);
+            collection.find().toArray(function(err2, dispositivos) {
                 client.close();
                 callback(err2, dispositivos);
             });
