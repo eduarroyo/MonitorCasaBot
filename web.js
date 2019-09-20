@@ -1,13 +1,26 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var packageInfo = require('./package.json');
-
+var db = require('./db');
 
 var app = express();
 app.use(bodyParser.json());
 
 app.get('/', function(req, res) {
     res.json({ version: packageInfo.version });
+});
+
+// Esta URL permitirá a los clientes Raspberry Pi indicar que han actualizado su estado.
+app.post('/actualizar', function(req, res) {
+    console.log("-----> solicitud recibida POST /actualizar", req.connection.remoteAddress, req.body);
+    db.actualizarEstado(req.body.monitorId, function(err, resul) {
+        if(err) {
+            console.log(err);
+            res.sendStatus(500);
+        } else {
+            res.sendStatus(200);
+        }
+    });
 });
 
 var server = app.listen(process.env.PORT, "0.0.0.0", function() {
