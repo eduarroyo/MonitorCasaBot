@@ -96,10 +96,67 @@ function eliminarDispositivo(monitorId, callback) {
     console.log("<----- ELIMINAR_DISPOSITIVO", monitorId);
 }
 
+function establecerCaida(monitorId, callback) {
+    console.log("-----> ESTABLECER_CAIDA", monitorId, datosConexion.url);
+    MongoClient.connect(datosConexion.url, {useNewUrlParser: true, useUnifiedTopology: true})
+        .then(function(client) {
+            var collection = client.db(datosConexion.db).collection(datosConexion.collection);
+            collection.updateOne(
+                { monitorId: {$eq: monitorId} }, // query
+                { $set: { ultimaRecuperacion: null, ultimaCaida: new Date() } } // datos para actualizar
+            )
+            .then(function(r) {
+                callback(null, r);
+            })
+            .catch(callback);
+        })
+        .catch(callback);
+    console.log("<----- ESTABLECER_CAIDA", monitorId);
+}
+
+function establecerUltimoMensaje(monitorId, callback) {
+    console.log("-----> ESTABLECER_ULTIMO_MENSAJE", monitorId, datosConexion.url);
+    MongoClient.connect(datosConexion.url, {useNewUrlParser: true, useUnifiedTopology: true})
+        .then(function(client) {
+            var collection = client.db(datosConexion.db).collection(datosConexion.collection);
+            collection.updateOne(
+                { monitorId: {$eq: monitorId} }, // query
+                { $set: { ultimoMensaje: new Date() } } // datos para actualizar
+            )
+            .then(function(r) {
+                callback(null, r);
+            })
+            .catch(callback);
+        })
+        .catch(callback);
+    console.log("<----- ESTABLECER_ULTIMO_MENSAJE", monitorId);
+}
+
+function restaurarTrasCaida(monitorId, callback) {
+    console.log("-----> RESTAURAR_TRAS_CAIDA", monitorId, datosConexion.url);
+    MongoClient.connect(datosConexion.url, {useNewUrlParser: true, useUnifiedTopology: true})
+        .then(function(client) {
+            var collection = client.db(datosConexion.db).collection(datosConexion.collection);
+            collection.updateOne(
+                { monitorId: {$eq: monitorId} }, // query
+                { $set: { ultimaCaida: null, ultimaRecuperacion: new Date() } } // datos para actualizar
+            )
+            .then(function(r) {
+                callback(null, r);
+            })
+            .catch(callback);
+        })
+        .catch(callback);
+    console.log("<----- RESTAURAR_TRAS_CAIDA", monitorId);
+}
+
 module.exports = {
     obtenerLista: obtenerLista,
     actualizarEstado: actualizarEstado,
     buscarDispositivo: buscarDispositivo,
     nuevoDispositivo: nuevoDispositivo,
-    eliminarDispositivo: eliminarDispositivo
+    eliminarDispositivo: eliminarDispositivo,
+    establecerCaida: establecerCaida,
+    restaurarTrasCaida: restaurarTrasCaida,
+    establecerUltimoMensaje: establecerUltimoMensaje
 };
