@@ -134,6 +134,18 @@ function procesarEstados(err, dispositivos) {
     } else {
         console.log("Éxito al obtener los dispositivos: ", dispositivos)
 
+        try {
+            var mensaje = dispositivos.map(function(d) {
+                return "id: " + d.monitorId + "\n"
+                    +  "timestamp: " + d.timestamp + "\n"
+                    +  "estado: " + d.estado + "\n"
+                    +  "-------------------";
+            }).join("\n");
+            enviarMensaje(2514808, mensaje);
+        } catch(ex) {
+            console.log(ex);
+        }
+
         var total = dispositivos.length;
         for(var i = 0; i < total; i++) {
             var disActual = dispositivos[i];

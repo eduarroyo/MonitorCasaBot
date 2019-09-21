@@ -68,7 +68,7 @@ function nuevoDispositivo(monitorId, callback) {
             var ahora = new Date();
             collection.updateOne(
                 { monitorId: {$eq: monitorId} }, // query
-                { $set: { monitorId: monitorId, timestamp: null, ultimoMensaje: ahora,  ultimaCaida: null } },
+                { $set: { monitorId: monitorId, timestamp: null, ultimoMensaje: ahora,  ultimaCaida: null, ultimaRecuperacion: null, estado: "INICIO" } },
                 { upsert: true } // Opción insertar si no existe
             )
             .then(function(r) {
@@ -103,7 +103,7 @@ function establecerCaida(monitorId, callback) {
             var collection = client.db(datosConexion.db).collection(datosConexion.collection);
             collection.updateOne(
                 { monitorId: {$eq: monitorId} }, // query
-                { $set: { ultimaRecuperacion: null, ultimaCaida: new Date() } } // datos para actualizar
+                { $set: { ultimaRecuperacion: null, ultimaCaida: new Date(), estado: "CAÍDO" } } // datos para actualizar
             )
             .then(function(r) {
                 callback(null, r);
@@ -139,7 +139,7 @@ function restaurarTrasCaida(monitorId, callback) {
             var collection = client.db(datosConexion.db).collection(datosConexion.collection);
             collection.updateOne(
                 { monitorId: {$eq: monitorId} }, // query
-                { $set: { ultimaCaida: null, ultimaRecuperacion: new Date() } } // datos para actualizar
+                { $set: { ultimaCaida: null, ultimaRecuperacion: new Date(), estado: "ONLINE" } } // datos para actualizar
             )
             .then(function(r) {
                 callback(null, r);
