@@ -11,12 +11,78 @@ if (process.env.NODE_ENV === 'production') {
     bot = new Bot(token, { polling: true });
 }
 
-
-bot.on('message', function(msg) {
+bot.on("message", function(msg) {
     var name = msg.from.first_name;
-    bot.sendMessage(msg.chat.id, 'Hello, ' + name + '!').then(function() {
-        // reply sent!
+    console.log("Nuevo mensaje recibido de " + name, JSON.stringify(msg));
+    var comando = obtenerComando(msg);
+
+    switch(comando) {
+        case "/start": 
+            iniciarUsuario(msg);
+            break;
+        case "/comprobar":
+            comprobarUltimaActualizacion(msg);
+            break;
+        default:
+            enviarInstrucciones(msg);
+            break;
+    }
+});
+
+function obtenerComando(msg) {
+    if(msg.text.startsWith("/start")) {
+        return "/start";
+    } else if(msg.text.startsWith("/comprobar")) {
+        return "/comprobar";
+    } else {
+        return null;
+    }
+}
+
+function iniciarUsuario(msg) {
+    db.buscarDispositivo(msg.from.id, function(err, usr) {
+        if(err) {
+            console.log("Error al buscar usuario: ", err);
+            enviarMensaje(msg.from.id, "Error al buscar usuario");
+        } else if(usr) {
+            enviarMensaje(msg.from.id, "Su ID de telegram ya estba registrado en el sistema. A partir de ahora su señal heartbeat deberá incluir el campo monitorId: " + msg.from.id);
+        } else {
+            db.nuevoDispositivo(msg.from.id, function(err, usu) {
+                if(err) {
+                    enviarMensaje(msg.from.id, "Ha ocurrido un error al registrar su id de usuario en la base de datos. " + JSON.stringify(err));
+                } else {
+                    enviarMensaje(msg.from.id, "Su ID de telegram se ha registrado en el sistema. A partir de ahora su señal heartbeat deberá incluir el campo monitorId: " + msg.from.id);
+                    enviarInstrucciones(msg);
+                }
+            });
+        }
     });
+    // TODO Buscar el usuario. Si existe, nada. Si no existe, registrar monitorId = id de telegram.
+}
+
+function enviarInstrucciones(msg) {
+    var name = msg.from.first_name;
+    var mensaje = "Bienvenido a MonitorCasaBot, " + name + ".\n"
+    + "Este bot permite monitorizar el estado de una señal heartbeat. Usted recibirá un mensaje "
+    + "en caso de que la señal deje de recibirse durante un periodo determinado y también cuando "
+    + "la señal se restaure tras el periodo de ausencia.";
+    enviarMensaje(msg.chat.id, mensaje);
+};
+
+function enviarMensaje(id, texto) {
+    bot.sendMessage(id, texto)
+        .then(function() {
+            console.log("Mensaje enviado al usuario " + id + ": " + texto);
+        })
+        .catch(function(err) {
+            console.log("Error al enviar mensaje al usuario " + id, err);
+        });
+}
+
+
+bot.on("start", function(msg) {
+    var name = msg.from.first_name;
+    console.log("Comando /start recibido de " + name, JSON.stringify(msg));
 });
 
 bot.comprobarEstados = function() {
@@ -25,7 +91,11 @@ bot.comprobarEstados = function() {
 }
 
 function procesarEstados(err, dispositivos) {
-    console.log(err, dispositivos);
+    if(err) {
+        console.log("Error al obtener los dispositivos:", err);
+    } else {
+        console.log("Éxito al obtener los dispositivos: ", dispositivos)
+    }
 }
 
 console.log('Bot server started in the ' + process.env.NODE_ENV + ' mode');
