@@ -91,11 +91,11 @@ function comprobarUltimaActualizacion(msg) {
             if(dis && !dis.timestamp) {
                 enviarMensaje(msg.from.id, "Su dispositivo todavía no ha enviado ninguna actualización.");
             } else if(dis.timestamp && (ahora - dis.timestamp) >= diferenciaMaximaMilisegundos) {
-                var dateES = new Date().toLocaleString("es-ES", {timeZone: "Europe/Madrid"});
+                var dateES = (new Date(dis.timestamp)).toLocaleString("es-ES", {timeZone: "Europe/Madrid"});
                 var dd = new Date(dateES);
                 enviarMensaje(msg.from.id, "Su dispositivo está desconectado. Última actualización recibida: " + dd.toLocaleString());
             } else {
-                var dateES = new Date().toLocaleString("es-ES", {timeZone: "Europe/Madrid"});
+                var dateES = (new Date(dis.timestamp)).toLocaleString("es-ES", {timeZone: "Europe/Madrid"});
                 var dd = new Date(dateES);
                 enviarMensaje(msg.from.id, "Su dispositivo está conectado. Última actualización recibida: " + dd.toLocaleString());
             }
@@ -133,6 +133,57 @@ function procesarEstados(err, dispositivos) {
         console.log("Error al obtener los dispositivos:", err);
     } else {
         console.log("Éxito al obtener los dispositivos: ", dispositivos)
+
+        var total = dispositivos.length;
+        for(var i = 0; i < total; i++) {
+            var disActual = dispositivos[i];
+            procesarEstadoDispositivo(disActual);
+        }
+    }
+}
+
+function procesarEstadoDispositivo(dis) {
+    var ahora = new Date();
+    var dateES = (new Date(dis.timestamp)).toLocaleString("es-ES", {timeZone: "Europe/Madrid"});
+    var ts = new Date(dateES);
+    if(!dis || !dis.timestamp) {
+        return;
+    } else if((ahora - dis.timestamp) >= diferenciaMaximaMilisegundos) {
+        if(!dis.ultimoMensaje || !dis.ultimaCaida || dis.ultimaCaida > dis.ultimoMensaje) {
+            db.establecerCaida(dis.monitorId, function(err) {
+                if(err) {
+                    console.log("Error registrando caída del dispositivo " + dis.monitorId, err);
+                    enviarMensaje(dis.monitorId, "Error registrando caída del dispositivo " + dis.monitorId + ": " + JSON.stringify(err));
+                } else {
+                    console.log("Caída del dispositivo " + dis.monitorId + " registrada.")
+                    enviarMensaje(dis.monitorId, "Su dispositivo está DESCONECTADO. Última actualización recibida: " + ts.toLocaleString());
+                    db.establecerUltimoMensaje(dis.monitorId, function(err) {
+                        if(err) {
+                            console.log("Error registrando fecha del último mensaje enviado al dispositivo " + dis.monitorId + ": " + JSON.stringify(err));
+                        }
+                    });
+                }
+            });
+        } else {
+            console.log("El dispositivo " + dis.monitorId + " sigue caído.");
+        }
+    } else if(dis.ultimaCaida && dis.timestamp > dis.ultimaCaida) {
+        db.restaurarTrasCaida(dis.monitorId, function(err) {
+            if(err) {
+                console.log("Error registrando restauracion tras caída del dispositivo " + dis.monitorId + ": " + JSON.stringify(err));
+                enviarMensaje(dis.monitorId, "Error registrando restauracion tras caída del dispositivo " + dis.monitorId + ": " + JSON.stringify(err));
+            } else {
+                console.log("Restauración del dispositivo " + dis.monitorId + " registrada.")
+                enviarMensaje(dis.monitorId, "Su dispositivo está CONECTADO DE NUEVO. Última actualización recibida: " + ts.toLocaleString());
+                db.establecerUltimoMensaje(dis.monitorId, function(err) {
+                    if(err) {
+                        console.log("Error registrando fecha del último mensaje enviado al dispositivo " + dis.monitorId + ": " + JSON.stringify(err));
+                    }
+                });
+            }
+        });
+    } else {
+        console.log("El dispositivo " + dis.monitorId + " sigue conectado.");
     }
 }
 
