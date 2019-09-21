@@ -65,9 +65,10 @@ function nuevoDispositivo(monitorId, callback) {
     MongoClient.connect(datosConexion.url, {useNewUrlParser: true, useUnifiedTopology: true})
         .then(function(client) {
             var collection = client.db(datosConexion.db).collection(datosConexion.collection);
+            var ahora = new Date();
             collection.updateOne(
                 { monitorId: {$eq: monitorId} }, // query
-                { $set: { monitorId: monitorId, timestamp: new Date() } }, // datos para actualizar
+                { $set: { monitorId: monitorId, timestamp: null, ultimoMensaje: ahora,  ultimaCaida: null } },
                 { upsert: true } // Opción insertar si no existe
             )
             .then(function(r) {
@@ -79,9 +80,26 @@ function nuevoDispositivo(monitorId, callback) {
     console.log("<----- ACTUALIZAR_ESTADO", monitorId);
 }
 
+function eliminarDispositivo(monitorId, callback) {
+    console.log("-----> ELIMINAR_DISPOSITIVO", monitorId);
+    MongoClient.connect(datosConexion.url, {useNewUrlParser: true, useUnifiedTopology: true})
+        .then(function(client) {
+            var collection = client.db(datosConexion.db).collection(datosConexion.collection);
+            var ahora = new Date();
+            collection.deleteOne({ monitorId: {$eq: monitorId} })
+                .then(function(r) {
+                    callback(null, r);
+                })
+                .catch(callback);
+        })
+        .catch(callback);
+    console.log("<----- ELIMINAR_DISPOSITIVO", monitorId);
+}
+
 module.exports = {
     obtenerLista: obtenerLista,
     actualizarEstado: actualizarEstado,
     buscarDispositivo: buscarDispositivo,
-    nuevoDispositivo: nuevoDispositivo
+    nuevoDispositivo: nuevoDispositivo,
+    eliminarDispositivo: eliminarDispositivo
 };

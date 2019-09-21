@@ -18,7 +18,10 @@ bot.on("message", function(msg) {
 
     switch(comando) {
         case "/start": 
-            iniciarUsuario(msg);
+            iniciarDispositivo(msg);
+            break;
+        case "/stop":
+            eliminarDispositivo(msg);
             break;
         case "/comprobar":
             comprobarUltimaActualizacion(msg);
@@ -32,6 +35,8 @@ bot.on("message", function(msg) {
 function obtenerComando(msg) {
     if(msg.text.startsWith("/start")) {
         return "/start";
+    } else if(msg.text.startsWith("/stop")) {
+        return "/stop";
     } else if(msg.text.startsWith("/comprobar")) {
         return "/comprobar";
     } else {
@@ -39,7 +44,7 @@ function obtenerComando(msg) {
     }
 }
 
-function iniciarUsuario(msg) {
+function iniciarDispositivo(msg) {
     db.buscarDispositivo(msg.from.id, function(err, usr) {
         if(err) {
             console.log("Error al buscar usuario: ", err);
@@ -51,13 +56,26 @@ function iniciarUsuario(msg) {
                 if(err) {
                     enviarMensaje(msg.from.id, "Ha ocurrido un error al registrar su id de usuario en la base de datos. " + JSON.stringify(err));
                 } else {
-                    enviarMensaje(msg.from.id, "Su ID de telegram se ha registrado en el sistema. A partir de ahora su señal heartbeat deberá incluir el campo monitorId: " + msg.from.id);
                     enviarInstrucciones(msg);
+                    enviarMensaje(msg.from.id, "Su ID de telegram se ha registrado en el sistema. A partir de ahora su señal heartbeat deberá incluir el campo monitorId: " + msg.from.id);
                 }
             });
         }
     });
     // TODO Buscar el usuario. Si existe, nada. Si no existe, registrar monitorId = id de telegram.
+}
+
+function eliminarDispositivo(msg) {
+    db.eliminarDispositivo(msg.from.id, function(err) {
+        if(err) {
+            var mensaje = "Error al eliminar dispositivo: " + JSON.stringify();
+            console.log(mensaje);
+            enviarMensaje(msg.from.id, mensaje);
+        } else {
+            console.log("Dispositivo eliminado: " + msg.from.id);
+            enviarMensaje(msg.from.id, "Dispositivo eliminado. Puede eliminar el chat para detener el bot o bien volver a registrarse con el comando /start");
+        }
+    });
 }
 
 function enviarInstrucciones(msg) {
@@ -78,12 +96,6 @@ function enviarMensaje(id, texto) {
             console.log("Error al enviar mensaje al usuario " + id, err);
         });
 }
-
-
-bot.on("start", function(msg) {
-    var name = msg.from.first_name;
-    console.log("Comando /start recibido de " + name, JSON.stringify(msg));
-});
 
 bot.comprobarEstados = function() {
     console.log("---> COMPROBAR ESTADOS", new Date());
