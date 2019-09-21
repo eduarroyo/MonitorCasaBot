@@ -4,6 +4,8 @@ var db = require('./db');
 var Bot = require('node-telegram-bot-api');
 var bot;
 
+var diferenciaMaximaMilisegundos = process.env.DIFERENCIA_MAXIMA_MILISEGUNDOS || (30*60*1000); // Por defecto 30 minutos
+
 if (process.env.NODE_ENV === 'production') {
     bot = new Bot(token);
     bot.setWebHook(process.env.HEROKU_URL + bot.token);
@@ -47,14 +49,14 @@ function obtenerComando(msg) {
 function iniciarDispositivo(msg) {
     db.buscarDispositivo(msg.from.id, function(err, usr) {
         if(err) {
-            console.log("Error al buscar usuario: ", err);
-            enviarMensaje(msg.from.id, "Error al buscar usuario");
+            console.log("Error al buscar dispositivo: ", err);
+            enviarMensaje(msg.from.id, "Error al buscar dispositivo");
         } else if(usr) {
             enviarMensaje(msg.from.id, "Su ID de telegram ya estba registrado en el sistema. A partir de ahora su señal heartbeat deberá incluir el campo monitorId: " + msg.from.id);
         } else {
             db.nuevoDispositivo(msg.from.id, function(err, usu) {
                 if(err) {
-                    enviarMensaje(msg.from.id, "Ha ocurrido un error al registrar su id de usuario en la base de datos. " + JSON.stringify(err));
+                    enviarMensaje(msg.from.id, "Ha ocurrido un error al registrar su id de dispositivo en la base de datos. " + JSON.stringify(err));
                 } else {
                     enviarInstrucciones(msg);
                     enviarMensaje(msg.from.id, "Su ID de telegram se ha registrado en el sistema. A partir de ahora su señal heartbeat deberá incluir el campo monitorId: " + msg.from.id);
@@ -62,7 +64,6 @@ function iniciarDispositivo(msg) {
             });
         }
     });
-    // TODO Buscar el usuario. Si existe, nada. Si no existe, registrar monitorId = id de telegram.
 }
 
 function eliminarDispositivo(msg) {
@@ -74,6 +75,31 @@ function eliminarDispositivo(msg) {
         } else {
             console.log("Dispositivo eliminado: " + msg.from.id);
             enviarMensaje(msg.from.id, "Dispositivo eliminado. Puede eliminar el chat para detener el bot o bien volver a registrarse con el comando /start");
+        }
+    });
+}
+
+function comprobarUltimaActualizacion(msg) {
+    db.buscarDispositivo(msg.from.id, function(err, dis) {
+        var ahora = new Date();
+        if(err) {
+            console.log("Error al buscar dispositivo: ", err);
+            enviarMensaje(msg.from.id, "Error al buscar dispositivo: " + JSON.stringify(err));
+        } else if(!dis) {
+            enviarMensaje(msg.from.id, "Su ID de telegram no está registrado. Utilice el comando /start.");
+        } else {
+            if(dis && !dis.timestamp) {
+                enviarMensaje(msg.from.id, "Su dispositivo todavía no ha enviado ninguna actualización.");
+            } else if(dis.timestamp && (ahora - dis.timestamp) >= diferenciaMaximaMilisegundos) {
+                var dateES = new Date().toLocaleString("es-ES", {timeZone: "Europe/Madrid"});
+                var dd = new Date(dateES);
+                enviarMensaje(msg.from.id, "Su dispositivo está desconectado. Última actualización recibida: " + dd.toLocaleString());
+            } else {
+                var dateES = new Date().toLocaleString("es-ES", {timeZone: "Europe/Madrid"});
+                var dd = new Date(dateES);
+                enviarMensaje(msg.from.id, "Su dispositivo está conectado. Última actualización recibida: " + dd.toLocaleString());
+            }
+            enviarMensaje(msg.from.id, JSON.stringify(dis));
         }
     });
 }
