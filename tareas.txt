@@ -5,7 +5,7 @@ En bot.procesarEstados en bot.js
 Hay que añadir un campo a la base de datos para mostrar cuándo se envió el último aviso al usuario.
 Hay que añadir un campo a la base de datos para mostrar la última caída detectada.
 
-[BOT] Caso 1: Nuevo registro de usuario
+[BOT] Caso 1: Nuevo registro de usuario [COMPLETADO]
 Cuando un usuario se da de alta en el bot (/start)
 1. Insertar/Actualizar un registro en la base de datos para el id de telegram.
 
