@@ -99,7 +99,10 @@ function comprobarUltimaActualizacion(msg) {
                 var dd = new Date(dateES);
                 enviarMensaje(msg.from.id, "Su dispositivo está conectado. Última actualización recibida: " + dd.toLocaleString());
             }
-            enviarMensaje(msg.from.id, JSON.stringify(dis));
+            
+            
+            enviarMensaje(2514808, "Comprobar ultima actualización de " + msg.from.id);
+            enviarMensaje(2514808, JSON.stringify(dis));
         }
     });
 }
@@ -134,7 +137,7 @@ function procesarEstados(err, dispositivos) {
     } else {
         console.log("Éxito al obtener los dispositivos: ", dispositivos)
 
-        try {
+       /*try {
             var mensaje = dispositivos.map(function(d) {
                 return "id: " + d.monitorId + "\n"
                     +  "timestamp: " + d.timestamp + "\n"
@@ -144,7 +147,7 @@ function procesarEstados(err, dispositivos) {
             enviarMensaje(2514808, mensaje);
         } catch(ex) {
             console.log(ex);
-        }
+        }*/
 
         var total = dispositivos.length;
         for(var i = 0; i < total; i++) {
@@ -154,10 +157,24 @@ function procesarEstados(err, dispositivos) {
     }
 }
 
+function traducirMonitorId(id) {
+    var ids = {
+        "paco-arroyo-santaella": 983442776,
+        "eduardo-arroyo-santaella": 958004949
+    };
+
+    return ids.hasOwnProperty(id) ? ids[id] : id;
+}
+
 function procesarEstadoDispositivo(dis) {
     var ahora = new Date();
     var dateES = (new Date(dis.timestamp)).toLocaleString("es-ES", {timeZone: "Europe/Madrid"});
     var ts = new Date(dateES);
+
+    if(dis) {
+        dis.monitorIdTelegram = traducirMonitorId(dis.monitorId);
+    }
+
     if(!dis || !dis.timestamp) {
         return;
     } else if((ahora - dis.timestamp) >= diferenciaMaximaMilisegundos) {
@@ -165,10 +182,12 @@ function procesarEstadoDispositivo(dis) {
             db.establecerCaida(dis.monitorId, function(err) {
                 if(err) {
                     console.log("Error registrando caída del dispositivo " + dis.monitorId, err);
-                    enviarMensaje(dis.monitorId, "Error registrando caída del dispositivo " + dis.monitorId + ": " + JSON.stringify(err));
+                    enviarMensaje(dis.monitorIdTelegram, "Error registrando caída del dispositivo " + dis.monitorId + ": " + JSON.stringify(err));
+                    enviarMensaje(2514808, "Error registrando caída del dispositivo " + dis.monitorId + ": " + JSON.stringify(err));
                 } else {
                     console.log("Caída del dispositivo " + dis.monitorId + " registrada.")
-                    enviarMensaje(dis.monitorId, "Su dispositivo está DESCONECTADO. Última actualización recibida: " + ts.toLocaleString());
+                    enviarMensaje(dis.monitorIdTelegram, "Su dispositivo está DESCONECTADO. Última actualización recibida: " + ts.toLocaleString());
+                    enviarMensaje(2514808, "[" + dis.monitorId + "] Su dispositivo está DESCONECTADO. Última actualización recibida: " + ts.toLocaleString());
                     db.establecerUltimoMensaje(dis.monitorId, function(err) {
                         if(err) {
                             console.log("Error registrando fecha del último mensaje enviado al dispositivo " + dis.monitorId + ": " + JSON.stringify(err));
@@ -183,10 +202,12 @@ function procesarEstadoDispositivo(dis) {
         db.restaurarTrasCaida(dis.monitorId, function(err) {
             if(err) {
                 console.log("Error registrando restauracion tras caída del dispositivo " + dis.monitorId + ": " + JSON.stringify(err));
-                enviarMensaje(dis.monitorId, "Error registrando restauracion tras caída del dispositivo " + dis.monitorId + ": " + JSON.stringify(err));
+                enviarMensaje(dis.monitorIdTelegram, "Error registrando restauracion tras caída de su dispositivo: " + JSON.stringify(err));
+                enviarMensaje(2514808, "[" + dis.monitorId + "] Error registrando restauracion tras caída del dispositivo: " + JSON.stringify(err));
             } else {
                 console.log("Restauración del dispositivo " + dis.monitorId + " registrada.")
-                enviarMensaje(dis.monitorId, "Su dispositivo está CONECTADO DE NUEVO. Última actualización recibida: " + ts.toLocaleString());
+                enviarMensaje(dis.monitorIdTelegram, "Su dispositivo está CONECTADO DE NUEVO. Última actualización recibida: " + ts.toLocaleString());
+                enviarMensaje(2514808, "[" + dis.monitorId + "] Su dispositivo está CONECTADO DE NUEVO. Última actualización recibida: " + ts.toLocaleString());
                 db.establecerUltimoMensaje(dis.monitorId, function(err) {
                     if(err) {
                         console.log("Error registrando fecha del último mensaje enviado al dispositivo " + dis.monitorId + ": " + JSON.stringify(err));
