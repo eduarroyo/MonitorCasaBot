@@ -2,6 +2,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var packageInfo = require('./package.json');
 var db = require('./db');
+var bot = require('./bot');
 
 var app = express();
 app.use(bodyParser.json());
@@ -9,6 +10,10 @@ app.use(bodyParser.json());
 app.get('/', function(req, res) {
     res.json({ version: packageInfo.version });
 });
+
+app.get('/comprobarDispotivios', function(req, res) {
+    bot.comprobarEstados();
+})
 
 // Esta URL permitirá a los clientes Raspberry Pi indicar que han actualizado su estado.
 app.post('/actualizar', function(req, res) {
