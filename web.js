@@ -13,6 +13,7 @@ app.get('/', function(req, res) {
 
 app.get('/comprobarDispositivos', function(req, res) {
     bot.comprobarEstados();
+    res.send("OK");
 })
 
 // Esta URL permitirá a los clientes Raspberry Pi indicar que han actualizado su estado.
