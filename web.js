@@ -11,7 +11,7 @@ app.get('/', function(req, res) {
     res.json({ version: packageInfo.version });
 });
 
-app.get('/comprobarDispositivios', function(req, res) {
+app.get('/comprobarDispositivos', function(req, res) {
     bot.comprobarEstados();
 })
 
