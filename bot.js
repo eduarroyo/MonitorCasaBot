@@ -52,7 +52,7 @@ function iniciarDispositivo(msg) {
             console.log("Error al buscar dispositivo: ", err);
             enviarMensaje(msg.from.id, "Error al buscar dispositivo");
         } else if(usr) {
-            enviarMensaje(msg.from.id, "Su ID de telegram ya estba registrado en el sistema. A partir de ahora su señal heartbeat deberá incluir el campo monitorId: " + msg.from.id);
+            enviarMensaje(msg.from.id, "Su ID de telegram ya estaba registrado en el sistema. A partir de ahora su señal heartbeat deberá incluir el campo monitorId: " + msg.from.id);
         } else {
             db.nuevoDispositivo(msg.from.id, function(err, usu) {
                 if(err) {
