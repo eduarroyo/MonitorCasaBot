@@ -1,15 +1,14 @@
 {
-  "name": "heroku-node-telegram-bot",
+  "name": "monitor-casa-bot",
   "version": "1.0.3",
-  "description": "Starter pack for running telegram bot on the Heroku using Node.js",
+  "description": "Bot para control de dispositivos IoT.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
     "switch_to_dev": "export $(cat .env | xargs) && wget --spider https://api.telegram.org/bot$TOKEN/setWebhook?url= --delete-after && node index.js"
   },
-  "author": "Volodymyr Lut",
-  "license": "ISC",
+  "author": "Eduardo Arroyo Ramírez",
   "dependencies": {
     "body-parser": "^1.19.0",
     "dotenv": "^4.0.0",
