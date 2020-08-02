@@ -2,6 +2,7 @@
 
 ## Ideas para investigar:
 
+* Pasar a typescript
 * Añadir base de datos de sensores/actuadores por cada dispositivo.
 * Enviar la IP local del dispositivo en las solicitudes POST y guardarlas en la base de datos. Es sólo para consulta a la hora de configurar el id.
 * Investigar modo de funcionamiento lento: asociado a la programación de un enchufe inteligente que se enciende sólo x veces al día activando el router y el dispositivo al mismo tiempo, de manera que podemos comprobar que hay corriente sin mantener el router encendido todo el día (cuando estamos fuera de casa un periodo largo).
@@ -55,6 +56,9 @@ Ahora el cliente es mucho más barato y es fácil que en poco tiempo tengamos va
     - [ ] 2.4.2 Identificador del dispositivo [cadena de texto]
     - [ ] 2.4.3 Periodo de actualización [entero, minutos] (el periodo de las solicitudes POST del dispositivo).
 
+## 3 - Mejoras del bot
+- [ ] Tomar configuración del bot del archivo ENV
+- [ ] En el proceso de actualización de un dispositivo, comprobar si el dispositivo estaba offline y si lo estaba, llamar a recuperar tras caida para que el usuario sea notificado inmediatamente.
 ---
 
 # Septiembre 2019
