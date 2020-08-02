@@ -40,7 +40,7 @@ Ahora el cliente es mucho más barato y es fácil que en poco tiempo tengamos va
 
 ## 2 - Configuración remota del dispositivo
 - [ ] 2.1 La configuración vigente del dispositivo se enviará como respuesta a las solicitudes POST.
-- [ ] 2.2 El dispositivo almacenará la configuración en la memoria EEPROM de manera que sea persistente tras un reinicio.
+- [ ] 2.2 El dispositivo almacenará la configuración en la memoria persistente.
 - [ ] 2.3 El usuario podrá modificar la configuración mediante un comandos del bot de telegram. Por ejemplo:
     - [ ] 2.3.1 El usuario entra en telegram /configuracion <monitor-id> 
     - [ ] 2.3.2 El bot muestra una lista etiquetas, correspondientes a los diferentes parámetros de configuración
