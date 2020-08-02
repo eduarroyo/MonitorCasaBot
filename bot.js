@@ -1,6 +1,6 @@
 var token = process.env.TOKEN;
 
-var db = require('./db');
+var db = require('./dbrepo');
 var Bot = require('node-telegram-bot-api');
 var bot;
 

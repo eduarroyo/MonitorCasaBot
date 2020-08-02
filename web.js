@@ -1,7 +1,7 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var packageInfo = require('./package.json');
-var db = require('./db');
+var db = require('./dbrepo');
 var bot = require('./bot');
 
 var app = express();

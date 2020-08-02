@@ -1,0 +1,13 @@
+#Ejemplo de archivo de configuración. 
+#   · Reemplazar los valores entre <> por los valores reales
+#   · Renombrar el archivo como .env
+
+CONNSTR=<mongodb-connection-string>
+COL_DEVICES=devices # Nombre de la colección dentro de la base de datos de mongodb.
+DATABASE=<mongodb-database>
+HEROKU_URL=<url-del-servicio-en-heroku>
+NODE_ENV=development
+TOKEN=<token-de-heroku>
+DIFERENCIA_MAXIMA_MILISEGUNDOS=1800000
+DB_USER=<usuario-de-la-base-de-datos>
+DB_PASSWORD=<clave-de-la-base-de-datos>
