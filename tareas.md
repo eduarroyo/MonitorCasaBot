@@ -1,31 +1,44 @@
+# Agosto 2020
+
+## Ideas para investigar:
+
+* Añadir base de datos de sensores/actuadores por cada dispositivo.
+* Enviar la IP local del dispositivo en las solicitudes POST y guardarlas en la base de datos. Es sólo para consulta a la hora de configurar el id.
+* Investigar modo de funcionamiento lento: asociado a la programación de un enchufe inteligente que se enciende sólo x veces al día activando el router y el dispositivo al mismo tiempo, de manera que podemos comprobar que hay corriente sin mantener el router encendido todo el día (cuando estamos fuera de casa un periodo largo).
+* Investigar baterías con señal de carga vs SAIs para alimentar router y cargador.
+* Investigar modem GPRS.
+* Investigar zigbee, mosquitto, nodered, grafana, influxdb, espurna.
+
 # Julio 2020
 
 Tenemos el nuevo cliente que corre sobre una placa NodeMCU. El cliente se conecta a una wifi y envía su señal de watchdog periódicamente mediante una mediante una solicitud POST.
 Ahora el cliente es mucho más barato y es fácil que en poco tiempo tengamos varios funcionando. Cada usuario puede necesitar más de un dispositivo y el mantenimiento puede ser más frecuente. Dada la situación se plantean los siguientes cambios
 
-## Cambios urgentes en el programa del NodeMCU
-- [x] 0.1 Almacenar/recuperar el identificador en/de la EEPROM.
+## 0 - Cambios urgentes en el programa del NodeMCU
+- [x] 0.1 Almacenar/recuperar el identificador en/de la memoria persistente.
 - [x] 0.2 Enviar una solicitud inmediatamente al modificar el identificador del dispositivo.
-- [ ] 0.3 Averiguar por qué está respondiendo con código 400 mientras que responde 200 cuando hacemos la misma solicitud desde POSTMAN.
+- [x] 0.3 Enviar una solicitud inmediatamente encenderse el dispositivo, siempre y cuando la configuración sea correcta.
+- [x] 0.4 Averiguar por qué está respondiendo con código 400 mientras que responde 200 cuando hacemos la misma solicitud desde POSTMAN.
 
-## Varios dispositivos por usuario
-- [ ] 1.1. Cada dispositivo tendrá un identificador único configurado por el usuario (ya no vale el id de telegram).
-- [ ] 1.2.El identificador se establece la primera vez mediante una solicitud GET local contra la IP del dispositivo http://192.168.1.XXX?id=mi-primer-monitor-id
-- [ ] 1.3. El identificador se debe almacenar en la memoria EEPROM del dispositivo NodeMCU.
-- [ ] 1.4. Una vez asociado el dispositivo al usuario, éste podrá modificar el identificador mediante un comando de telegram.
-- [ ] 1.5. Al registrarse un usuario (/start) ya no le decimos su id de telegram. Actualizar las instrucciones que se envían.
-- [ ] 1.6. Comando /vincular
-  - [ ] 1.6.1. El bot pide el identificador del dispositivo para vincular.
-  - [ ] 1.6.2. El usuario introduce el identificador
-  - [ ] 1.6.3. El bot busca por identificador entre los dispositivos sin vincular. Si no lo hay, contesta con mensaje. Si lo hay, actualiza el campo usuarioId con el id de telegram del usuario.
-  - [ ] 1.6.4. El bot envía un informe del estado del dispositivo al usuario junto con el mensaje de que el dispositivo está vinculado.
-- [ ] 1.7. Comando /desvincular
-  - [ ] 1.7.1. El bot muestra una lista de etiquetas con los dispositivos del - usuario.
-  - [ ] 1.7.2. El usuario pulsa uno de los dispositivos.
-  - [ ] 1.7.3. El bot actualiza el registro del dispositivo borrando el campo usuarioId.
+## 1 - Varios dispositivos por usuario/Varios usuarios por dispositivo
+- [x] 1.1 Cada dispositivo tendrá un identificador único configurado por el usuario (ya no vale el id de telegram).
+- [x] 1.2 El identificador se establece la primera vez mediante una solicitud GET local contra la IP del dispositivo http://192.168.1.XXX?id=mi-primer-monitor-id
+- [x] 1.3 El identificador se debe almacenar en la memoria persistente del dispositivo NodeMCU.
+- [ ] 1.4 Una vez asociado el dispositivo al usuario, éste podrá modificar el identificador mediante un comando de telegram.
+- [ ] 1.5 Al registrarse un usuario (/start) ya no le decimos su id de telegram. Actualizar las instrucciones del sistema.
+- [ ] 1.6 Cambiar el campo usuarioId de la base de datos de dispositivos por un array llamado usuariosVinculados. Guardará los ids de telegram de los usuarios que tengan el dispositivo vinculado. Se controlará que los ids que contenga el array sean únicos.
+- [ ] 1.7 Comando /vincular
+  - [ ] 1.7.1 El bot pide el identificador del dispositivo para vincular.
+  - [ ] 1.7.2 El usuario introduce el identificador
+  - [ ] 1.7.3 El bot busca por identificador entre los dispositivos sin vincular. Si no lo hay, contesta con mensaje. Si lo hay, añade el id de telegram del usuario al campo el campo usuariosVinculados (si no estaba ya).
+  - [ ] 1.7.4 El bot envía un informe del estado del dispositivo al usuario junto con el mensaje de que el dispositivo está vinculado.
+- [ ] 1.8. Comando /desvincular
+  - [ ] 1.8.1 El bot muestra una lista de etiquetas con los dispositivos del usuario.
+  - [ ] 1.8.2 El usuario pulsa uno de los dispositivos.
+  - [ ] 1.8.3 El bot actualiza el registro del dispositivo borrando el el id de telegram del array de usuarios vinculados.
 
-## Configuración remota del dispositivo
-- [ ] 2.1. La configuración vigente del dispositivo se enviará como respuesta a las solicitudes POST.
+## 2 - Configuración remota del dispositivo
+- [ ] 2.1 La configuración vigente del dispositivo se enviará como respuesta a las solicitudes POST.
 - [ ] 2.2 El dispositivo almacenará la configuración en la memoria EEPROM de manera que sea persistente tras un reinicio.
 - [ ] 2.3 El usuario podrá modificar la configuración mediante un comandos del bot de telegram. Por ejemplo:
     - [ ] 2.3.1 El usuario entra en telegram /configuracion <monitor-id> 
