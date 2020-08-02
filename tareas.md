@@ -1,3 +1,5 @@
+A partir de ahora las tareas están en el proyecto de github.
+
 # Agosto 2020
 
 ## Ideas para investigar:
@@ -25,9 +27,8 @@ Ahora el cliente es mucho más barato y es fácil que en poco tiempo tengamos va
 - [x] 1.1 Cada dispositivo tendrá un identificador único configurado por el usuario (ya no vale el id de telegram).
 - [x] 1.2 El identificador se establece la primera vez mediante una solicitud GET local contra la IP del dispositivo http://192.168.1.XXX?id=mi-primer-monitor-id
 - [x] 1.3 El identificador se debe almacenar en la memoria persistente del dispositivo NodeMCU.
-- [ ] 1.4 Una vez asociado el dispositivo al usuario, éste podrá modificar el identificador mediante un comando de telegram.
-- [ ] 1.5 Al registrarse un usuario (/start) ya no le decimos su id de telegram. Actualizar las instrucciones del sistema.
-- [ ] 1.6 Cambiar el campo usuarioId de la base de datos de dispositivos por un array llamado usuariosVinculados. Guardará los ids de telegram de los usuarios que tengan el dispositivo vinculado. Se controlará que los ids que contenga el array sean únicos.
+- [ ] 1.4 Al registrarse un usuario (/start) ya no le decimos su id de telegram. Actualizar las instrucciones del sistema.
+- [ ] 1.5 Cambiar el campo usuarioId de la base de datos de dispositivos por un array llamado usuariosVinculados. Guardará los ids de telegram de los usuarios que tengan el dispositivo vinculado. Se controlará que los ids que contenga el array sean únicos.
 - [ ] 1.7 Comando /vincular
   - [ ] 1.7.1 El bot pide el identificador del dispositivo para vincular.
   - [ ] 1.7.2 El usuario introduce el identificador
